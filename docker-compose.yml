@@ -1,0 +1,63 @@
+networks:
+  public_net:
+    driver: bridge
+  internal_net:
+    driver: bridge
+    internal: true
+  iot_net:
+    driver: bridge
+    internal: true
+
+services:
+
+  web-app:
+    build: ./web-app
+    container_name: web-app
+    ports:
+      - "0.0.0.0:80:80"
+    networks:
+      - public_net
+      - internal_net
+    depends_on:
+      - api-service
+    restart: unless-stopped
+
+  api-service:
+    build: ./api-service
+    container_name: api-service
+    networks:
+      - internal_net
+      - iot_net
+    depends_on:
+      - mqtt-broker
+    restart: unless-stopped
+
+  mqtt-broker:
+    build: ./mqtt-broker
+    container_name: mqtt-broker
+    ports:
+      - "0.0.0.0:9001:9001"
+      - "0.0.0.0:1883:1883"
+    networks:
+      - public_net
+      - internal_net
+      - iot_net
+    restart: unless-stopped
+
+  thermostat-01:
+    build: ./thermostat-01
+    container_name: thermostat-01
+    networks:
+      - iot_net
+    depends_on:
+      - mqtt-broker
+    restart: unless-stopped
+
+  pump-ctrl-01:
+    build: ./pump-ctrl-01
+    container_name: pump-ctrl-01
+    networks:
+      - iot_net
+    depends_on:
+      - mqtt-broker
+    restart: unless-stopped

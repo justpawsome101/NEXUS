@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Nexus Facilities Group{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/nexus.css"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-mark">N</span>
+        <span class="logo-text">NEXUS <span class="logo-sub">FACILITIES GROUP</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/login" class="nav-cta">Portal Login</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  {% block content %}{% endblock %}
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="logo-mark small">N</span>
+        <span>Nexus Facilities Group</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Support</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-copy">
+        &copy; 2024 Nexus Facilities Group Pty Ltd. All rights reserved.<br/>
+        <span class="footer-small"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b3c0c6c3c3dcc1c7f3ddd6cbc6c0d5d2d0dadfdac7dad6c09dd

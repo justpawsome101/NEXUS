@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Portal Login — Nexus Facilities Group{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+  <div class="login-left">
+    <div class="login-brand">
+      <span class="logo-mark large">N</span>
+      <div>
+        <div class="login-brand-name">Nexus Facilities Group</div>
+        <div class="login-brand-tag">Building Management Portal</div>
+      </div>
+    </div>
+    <p class="login-desc">Authorised personnel only. All access is logged and monitored. Unauthorised access attempts will be reported to the relevant authorities.</p>
+    <div class="login-stats">
+      <div class="stat">
+        <span class="stat-val">40+</span>
+        <span class="stat-label">Buildings managed</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">1,200+</span>
+        <span class="stat-label">Connected devices</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">99.9%</span>
+        <span class="stat-label">Platform uptime</span>
+      </div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="login-card">
+      <h2 class="login-title">Sign in</h2>
+      <p class="login-sub">Use your Nexus building manager credentials.</p>
+      {% if error %}
+      <div class="login-error">{{ error }}</div>
+      {% endif %}
+      <form method="POST" action="/login" class="login-form">
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="manager@nexusfacilities.io" autocomplete="off"/>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••••••"/>
+        </div>
+        <button type="submit" class="btn-primary full">Sign in</button>
+      </form>
+      <div class="login-footer">
+        <a href="#">Forgot password?</a>
+        &nbsp;&bull;&nbsp;
+        <a href="#">Contact support</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% block title %}Nexus Facilities Group — Intelligent Infrastructure{% endblock %}
+
+{% block head %}
+<style>
+.device-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.device-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 1rem;
+  transition: border-color 0.3s;
+}
+.device-card.offline {
+  border-color: rgba(220,38,38,0.4);
+  background: rgba(220,38,38,0.04);
+}
+.device-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+.device-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+  font-family: monospace;
+  flex: 1;
+}
+.device-type {
+  font-size: 10px;
+  color: rgba(200,214,229,0.4);
+  letter-spacing: 0.05em;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.5s, box-shadow 0.5s;
+}
+.status-dot.online  { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.status-dot.offline { background: #dc2626; box-shadow: 0 0 6px #dc2626; }
+.status-dot.unknown { background: #555; }
+.device-desc {
+  font-size: 11px;
+  color: rgba(200,214,229,0.45);
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+}
+.metric-label { font-size: 11px; color: rgba(200,214,229,0.5); font-family: monospace; }
+.metric-val   { font-size: 12px; font-weight: 600; color: white; font-family: monospace; }
+.metric-val.offline-val { color: #dc2626; }
+.status-badge {
+  font-size: 10px;
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+.status-badge.online  { background: rgba(34,197,94,0.15);  color: #22c55e; }
+.status-badge.offline { background: rgba(220,38,38,0.15);  color: #dc2626; }
+.dash-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+.last-updated {
+  font-size: 10px;
+  color: rgba(200,214,229,0.3);
+  margin-top: 0.8rem;
+  text-align: right;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">BUILDING MANAGEMENT PLATFORM</div>
+    <h1 class="hero-title">Intelligent infrastructure.<br/><span class="hero-accent">Seamless control.</span></h1>
+    <p class="hero-sub">Nexus connects your entire building portfolio into one unified platform. Monitor environmental systems, manage devices, and respond to incidents — all from a single dashboard.</p>
+    <div class="hero-actions">
+      <a href="/login" class="btn-primary">Access Portal</a>
+      <a href="/about" class="btn-ghost">Learn More</a>
+    </div>
+  </div>
+
+  <div class="hero-dashboard">
+    <div class="dash-card">
+      <div class="dash-header-row">
+        <span class="dash-dot green" id="tower-dot"></span>
+        <span style="font-size:13px;font-weight:600;color:white;">Crestline Tower</span>
+        <span class="dash-status" id="tower-status">LIVE</span>
+      </div>
+      <div style="font-size:11px;color:rgba(200,214,229,0.4);margin-bottom:1rem;">32 floors · city centre · 3 corporate tenants</div>
+
+      <div class="device-grid">
+
+        <!-- thermostat-01 -->
+        <div class="device-card" id="card-thermostat">
+          <div class="device-card-header">
+            <span class="status-dot unknown" id="dot-thermostat"></span>
+            <div style="flex:1">
+              <div class="device-name">thermostat-01</div>
+              <div class="device-type">SMART THERMOSTAT</div>
+            </div>
+            <span class="status-badge offline" id="badge-thermostat">—</span>
+          </div>
+          <div class="device-desc">
+            Controls climate across floors 18–24. Maintains setpoint temperature, monitors humidity, and switches between heating and cooling modes. Tenant occupancy 08:00–18:00.
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">temperature</span>
+            <span class="metric-val" id="thermo-temp">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">setpoint</span>
+            <span class="metric-val" id="thermo-setpoint">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">humidity</span>
+            <span class="metric-val" id="thermo-humidity">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">mode</span>
+            <span class="metric-val" id="thermo-mode">—</span>
+          </div>
+        </div>
+
+        <!-- pump-ctrl-01 -->
+        <div class="device-card" id="card-pump">
+          <div class="device-card-header">
+            <span class="status-dot unknown" id="dot-pump"></span>
+            <div style="flex:1">
+              <div class="device-name">pump-ctrl-01</div>
+              <div class="device-type">PUMP CONTROLLER</div>
+            </div>
+            <span class="status-badge offline" id="badge-pump">—</span>
+          </div>
+          <div class="device-desc">
+            Manages water pressure and circulation for upper floors (18–32). Controls valve state and monitors motor RPM. Nominal operating pressure 3.2 bar.
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">flow rate</span>
+            <span class="metric-val" id="pump-flow">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">pressure</span>
+            <span class="metric-val" id="pump-pressure">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">motor rpm</span>
+            <span class="metric-val" id="pump-rpm">—</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">valve</span>
+            <span class="metric-val" id="pump-valve">—</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="last-updated" id="last-updated">Connecting...</div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <div class="feature-card">
+      <div class="feature-icon">⬡</div>
+      <h3>Real-time monitoring</h3>
+      <p>Live telemetry from every connected device across your entire portfolio. Temperature, pressure, flow rate, and more — streamed continuously.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⬡</div>
+      <h3>Remote command</h3>
+      <p>Send commands to any device from anywhere. Adjust setpoints, trigger reboots, update configurations — all without on-site visits.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⬡</div>
+      <h3>Multi-building control</h3>
+      <p>Manage your entire property portfolio from a single pane of glass. Segment by building, floor, or device type with full audit trails.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+function fmt(val, unit) {
+  if (val === null || val === undefined) return '—';
+  return parseFloat(val).toFixed(1) + ' ' + unit;
+}
+
+function setDevice(id, online) {
+  const dot   = document.getElementById('dot-' + id);
+  const badge = document.getElementById('badge-' + id);
+  const card  = document.getElementById('card-' + id);
+  if (online) {
+    dot.className   = 'status-dot online';
+    badge.className = 'status-badge online';
+    badge.textContent = 'ONLINE';
+    card.classList.remove('offline');
+  } else {
+    dot.className   = 'status-dot offline';
+    badge.className = 'status-badge offline';
+    badge.textContent = 'OFFLINE';
+    card.classList.add('offline');
+  }
+}
+
+function setOfflineMetrics(prefix, fields) {
+  fields.forEach(f => {
+    const el = document.getElementById(prefix + '-' + f);
+    if (el) { el.textContent = 'OFFLINE'; el.className = 'metric-val offline-val'; }
+  });
+}
+
+function clearOfflineClass(prefix, fields) {
+  fields.forEach(f => {
+    const el = document.getElementById(prefix + '-' + f);
+    if (el) el.className = 'metric-val';
+  });
+}
+
+async function poll() {
+  try {
+    const r = await fetch('/portal/device-status');
+    const data = await r.json();
+
+    const thermo = data['thermostat-01'];
+    const pump   = data['pump-ctrl-01'];
+
+    // thermostat-01
+    if (thermo.online) {
+      setDevice('thermostat', true);
+      clearOfflineClass('thermo', ['temp','setpoint','humidity','mode']);
+      document.getElementById('thermo-temp').textContent     = fmt(thermo.temperature, '°C');
+      document.getElementById('thermo-setpoint').textContent = fmt(thermo.setpoint, '°C');
+      document.getElementById('thermo-humidity').textContent = fmt(thermo.humidity, '%');
+      document.getElementById('thermo-mode').textContent     = thermo.mode || '—';
+    } else {
+      setDevice('thermostat', false);
+      setOfflineMetrics('thermo', ['temp','setpoint','humidity','mode']);
+    }
+
+    // pump-ctrl-01
+    if (pump.online) {
+      setDevice('pump', true);
+      clearOfflineClass('pump', ['flow','pressure','rpm','valve']);
+      document.getElementById('pump-flow').textContent     = fmt(pump.flow_rate, 'lpm');
+      document.getElementById('pump-pressure').textContent = fmt(pump.pressure, 'bar');
+      document.getElementById('pump-rpm').textContent      = pump.motor_rpm ? Math.round(pump.motor_rpm) + ' rpm' : '—';
+      document.getElementById('pump-valve').textContent    = pump.valve_state || '—';
+    } else {
+      setDevice('pump', false);
+      setOfflineMetrics('pump', ['flow','pressure','rpm','valve']);
+    }
+
+    // Tower header dot
+    const anyOnline = thermo.online || pump.online;
+    const allOnline = thermo.online && pump.online;
+    const towerDot = document.getElementById('tower-dot');
+    const towerStatus = document.getElementById('tower-status');
+    if (allOnline) {
+      towerDot.className = 'dash-dot green';
+      towerStatus.textContent = 'LIVE';
+      towerStatus.style.color = '#22c55e';
+    } else if (!thermo.online && !pump.online) {
+      towerDot.className = 'dash-dot';
+      towerDot.style.background = '#dc2626';
+      towerDot.style.boxShadow = '0 0 6px #dc2626';
+      towerStatus.textContent = 'OFFLINE';
+      towerStatus.style.color = '#dc2626';
+    } else {
+      towerDot.className = 'dash-dot';
+      towerDot.style.background = '#f59e0b';
+      towerDot.style.boxShadow = '0 0 6px #f59e0b';
+      towerStatus.textContent = 'DEGRADED';
+      towerStatus.style.color = '#f59e0b';
+    }
+
+    document.getElementById('last-updated').textContent =
+      'Last updated: ' + new Date().toLocaleTimeString();
+
+  } catch(e) {
+    document.getElementById('last-updated').textContent = 'Connection error';
+  }
+}
+
+poll();
+setInterval(poll, 3000);
+</script>
+{% endblock %}

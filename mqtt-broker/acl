@@ -1,0 +1,16 @@
+# Nexus MQTT ACL
+# MISCONFIGURATION M6: iotadmin granted readwrite on ALL device topics via wildcard.
+# A correct config would scope per device, e.g.:
+#   topic read  devices/thermostat-01/status
+#   topic write devices/thermostat-01/cmd
+# Instead, one rule grants everything:
+
+user iotadmin
+topic readwrite devices/#
+
+# Device users — also misconfigured with write access they should not have
+user thermostat-01
+topic readwrite devices/thermostat-01/#
+
+user pump-ctrl-01
+topic readwrite devices/pump-ctrl-01/#
